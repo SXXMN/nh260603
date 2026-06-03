@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>학교 온라인 건의함 MVP</title>
+
+<style>
+  :root{
+    --bg:#f5f7fb;
+    --card:#ffffff;
+    --text:#111827;
+    --sub:#6b7280;
+    --primary:#2563eb;
+    --border:#e5e7eb;
+    --danger:#ef4444;
+  }
+
+  body.dark{
+    --bg:#111827;
+    --card:#1f2937;
+    --text:#f9fafb;
+    --sub:#9ca3af;
+    --primary:#3b82f6;
+    --border:#374151;
+    --danger:#f87171;
+  }
+
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+  }
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    transition:0.3s;
+  }
+
+  .container{
+    width:100%;
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+  }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    gap:10px;
+  }
+
+  h1{
+    font-size:1.8rem;
+  }
+
+  .toggle-btn{
+    border:none;
+    background:var(--primary);
+    color:white;
+    padding:10px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px;
+    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  textarea{
+    width:100%;
+    min-height:120px;
+    resize:none;
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--text);
+    border-radius:12px;
+    padding:12px;
+    font-size:1rem;
+    margin-bottom:12px;
+  }
+
+  .actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  button{
+    border:none;
+    cursor:pointer;
+    border-radius:10px;
+    padding:10px 14px;
+    font-weight:bold;
+  }
+
+  .submit-btn{
+    background:var(--primary);
+    color:white;
+  }
+
+  .search-box{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:var(--card);
+    color:var(--text);
+    margin-bottom:20px;
+  }
+
+  .suggestion{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .suggestion-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+
+  .suggestion-content{
+    line-height:1.5;
+    word-break:break-word;
+  }
+
+  .meta{
+    color:var(--sub);
+    font-size:0.9rem;
+  }
+
+  .btn-group{
+    display:flex;
+    gap:8px;
+  }
+
+  .like-btn{
+    background:#f3f4f6;
+  }
+
+  body.dark .like-btn{
+    background:#374151;
+    color:white;
+  }
+
+  .delete-btn{
+    background:var(--danger);
+    color:white;
+  }
+
+  .empty{
+    text-align:center;
+    color:var(--sub);
+    padding:30px 0;
+  }
+
+  @media(max-width:600px){
+    h1{
+      font-size:1.4rem;
+    }
+
+    .suggestion-top{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+
+    .btn-group{
+      width:100%;
+    }
+
+    .btn-group button{
+      flex:1;
+    }
+
+    .toggle-btn{
+      padding:8px 10px;
+      font-size:0.9rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>📮 학교 온라인 건의함</h1>
+    <button class="toggle-btn" id="darkModeBtn">🌙 다크모드</button>
+  </header>
+
+  <div class="card">
+    <textarea id="suggestionInput" placeholder="익명으로 건의사항을 작성하세요..."></textarea>
+
+    <div class="actions">
+      <button class="submit-btn" onclick="addSuggestion()">건의 등록</button>
+    </div>
+  </div>
+
+  <input 
+    type="text"
+    id="searchInput"
+    class="search-box"
+    placeholder="건의 검색..."
+    oninput="renderSuggestions()"
+  />
+
+  <div id="suggestionList"></div>
+
+</div>
+
+<script>
+  let suggestions = JSON.parse(localStorage.getItem("suggestions")) || [];
+
+  function saveData(){
+    localStorage.setItem("suggestions", JSON.stringify(suggestions));
+  }
+
+  function addSuggestion(){
+    const input = document.getElementById("suggestionInput");
+    const text = input.value.trim();
+
+    if(!text){
+      alert("건의 내용을 입력해주세요.");
+      return;
+    }
+
+    const newSuggestion = {
+      id: Date.now(),
+      content: text,
+      likes: 0,
+      createdAt: new Date().toLocaleString()
+    };
+
+    suggestions.unshift(newSuggestion);
+
+    saveData();
+    renderSuggestions();
+
+    input.value = "";
+  }
+
+  function likeSuggestion(id){
+    suggestions = suggestions.map(item=>{
+      if(item.id === id){
+        item.likes++;
+      }
+      return item;
+    });
+
+    saveData();
+    renderSuggestions();
+  }
+
+  function deleteSuggestion(id){
+    const confirmDelete = confirm("정말 삭제하시겠습니까?");
+    
+    if(!confirmDelete) return;
+
+    suggestions = suggestions.filter(item=>item.id !== id);
+
+    saveData();
+    renderSuggestions();
+  }
+
+  function renderSuggestions(){
+    const list = document.getElementById("suggestionList");
+    const keyword = document
+      .getElementById("searchInput")
+      .value
+      .toLowerCase();
+
+    const filtered = suggestions.filter(item =>
+      item.content.toLowerCase().includes(keyword)
+    );
+
+    if(filtered.length === 0){
+      list.innerHTML = `
+        <div class="card empty">
+          등록된 건의가 없습니다.
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = filtered.map(item => `
+      <div class="card suggestion">
+        
+        <div class="suggestion-top">
+          <div class="meta">
+            🙈 익명 · ${item.createdAt}
+          </div>
+
+          <div class="btn-group">
+            <button class="like-btn" onclick="likeSuggestion(${item.id})">
+              👍 ${item.likes}
+            </button>
+
+            <button class="delete-btn" onclick="deleteSuggestion(${item.id})">
+              삭제
+            </button>
+          </div>
+        </div>
+
+        <div class="suggestion-content">
+          ${escapeHTML(item.content)}
+        </div>
+
+      </div>
+    `).join("");
+  }
+
+  function escapeHTML(str){
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  // 다크모드
+  const darkBtn = document.getElementById("darkModeBtn");
+
+  if(localStorage.getItem("darkMode") === "true"){
+    document.body.classList.add("dark");
+  }
+
+  darkBtn.addEventListener("click", ()=>{
+    document.body.classList.toggle("dark");
+
+    localStorage.setItem(
+      "darkMode",
+      document.body.classList.contains("dark")
+    );
+  });
+
+  renderSuggestions();
+</script>
+
+</body>
+</html>

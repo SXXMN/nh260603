@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>학교 온라인 건의함</title>
+
+<style>
+/* =========================
+   RESET
+========================= */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+:root{
+  --bg:#f3f5f9;
+  --card:#ffffff;
+  --text:#1f2937;
+  --sub:#6b7280;
+  --primary:#2563eb;
+  --danger:#dc2626;
+  --border:#dbe1ea;
+  --shadow:0 8px 24px rgba(0,0,0,0.08);
+}
+
+body.dark{
+  --bg:#111827;
+  --card:#1f2937;
+  --text:#f3f4f6;
+  --sub:#9ca3af;
+  --border:#374151;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:
+    "Pretendard",
+    "Noto Sans KR",
+    sans-serif;
+  transition:0.3s;
+  padding-bottom:80px;
+}
+
+/* =========================
+   HEADER
+========================= */
+header{
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  padding:18px;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.header-inner{
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.logo{
+  font-size:1.4rem;
+  font-weight:700;
+}
+
+.top-actions{
+  display:flex;
+  gap:10px;
+}
+
+button{
+  border:none;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.icon-btn{
+  background:var(--card);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:10px;
+}
+
+.icon-btn:hover{
+  transform:translateY(-2px);
+}
+
+/* =========================
+   LAYOUT
+========================= */
+.container{
+  max-width:1100px;
+  margin:24px auto;
+  padding:0 16px;
+  display:grid;
+  grid-template-columns:350px 1fr;
+  gap:20px;
+}
+
+@media(max-width:900px){
+  .container{
+    grid-template-columns:1fr;
+  }
+}
+
+/* =========================
+   CARD
+========================= */
+.card{
+  background:var(--card);
+  border-radius:18px;
+  padding:20px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
+}
+
+/* =========================
+   FORM
+========================= */
+.form-group{
+  margin-bottom:16px;
+}
+
+label{
+  display:block;
+  margin-bottom:8px;
+  font-weight:600;
+}
+
+input,
+textarea,
+select{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+  font-size:15px;
+}
+
+textarea{
+  resize:none;
+  min-height:120px;
+}
+
+.submit-btn{
+  width:100%;
+  background:var(--primary);
+  color:white;
+  padding:15px;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:700;
+}
+
+.submit-btn:hover{
+  opacity:0.9;
+}
+
+/* =========================
+   SEARCH
+========================= */
+.toolbar{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+
+.toolbar input,
+.toolbar select{
+  flex:1;
+}
+
+/* =========================
+   SUGGESTION CARD
+========================= */
+.suggestion{
+  margin-bottom:18px;
+  animation:fade 0.3s ease;
+}
+
+@keyframes fade{
+  from{
+    opacity:0;
+    transform:translateY(8px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.top-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.category{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
+
+.status{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.title{
+  font-size:20px;
+  margin-bottom:10px;
+}
+
+.meta{
+  color:var(--sub);
+  font-size:14px;
+  margin-bottom:14px;
+}
+
+.content{
+  line-height:1.7;
+  margin-bottom:16px;
+}
+
+.preview{
+  width:100%;
+  border-radius:14px;
+  margin-bottom:14px;
+  max-height:320px;
+  object-fit:cover;
+  border:1px solid var(--border);
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.action-btn{
+  padding:10px 14px;
+  border-radius:10px;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.like.active{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
+
+.delete{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.reply-box{
+  margin-top:18px;
+  background:var(--bg);
+  border-radius:14px;
+  padding:14px;
+}
+
+.reply-title{
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.empty{
+  text-align:center;
+  padding:60px 20px;
+  color:var(--sub);
+}
+
+.empty h2{
+  margin-bottom:10px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+footer{
+  text-align:center;
+  color:var(--sub);
+  padding:20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">🏫 학교 온라인 건의함</div>
+
+    <div class="top-actions">
+      <button class="icon-btn" id="backupBtn">백업</button>
+      <button class="icon-btn" id="restoreBtn">복원</button>
+      <button class="icon-btn" id="darkBtn">🌙</button>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- 작성 영역 -->
+  <section class="card">
+    <h2 style="margin-bottom:20px;">건의 작성</h2>
+
+    <div class="form-group">
+      <label>카테고리</label>
+      <select id="category">
+        <option>급식</option>
+        <option>시설</option>
+        <option>수업</option>
+        <option>행사</option>
+        <option>기타</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>제목</label>
+      <input type="text" id="title" maxlength="50" placeholder="제목 입력"/>
+    </div>
+
+    <div class="form-group">
+      <label>내용</label>
+      <textarea id="content" maxlength="500"
+      placeholder="건의 내용을 작성해주세요."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>삭제 비밀번호</label>
+      <input type="password" id="password"
+      placeholder="삭제 시 사용할 비밀번호"/>
+    </div>
+
+    <div class="form-group">
+      <label>이미지 첨부</label>
+      <input type="file" id="image" accept="image/*"/>
+    </div>
+
+    <button class="submit-btn" id="submitBtn">
+      건의 등록하기
+    </button>
+  </section>
+
+  <!-- 목록 영역 -->
+  <section>
+
+    <div class="toolbar">
+      <input type="text" id="search"
+      placeholder="검색어 입력"/>
+
+      <select id="filterCategory">
+        <option value="">전체 카테고리</option>
+        <option>급식</option>
+        <option>시설</option>
+        <option>수업</option>
+        <option>행사</option>
+        <option>기타</option>
+      </select>
+    </div>
+
+    <div id="suggestionList"></div>
+
+  </section>
+
+</div>
+
+<footer>
+  학교 온라인 건의함 MVP
+</footer>
+
+<script>
+/* =========================
+   STORAGE
+========================= */
+const STORAGE_KEY = "schoolSuggestions";
+
+/* =========================
+   ELEMENTS
+========================= */
+const suggestionList = document.getElementById("suggestionList");
+
+const titleInput = document.getElementById("title");
+const contentInput = document.getElementById("content");
+const passwordInput = document.getElementById("password");
+const categoryInput = document.getElementById("category");
+const imageInput = document.getElementById("image");
+
+const searchInput = document.getElementById("search");
+const filterCategory = document.getElementById("filterCategory");
+
+/* =========================
+   RANDOM NICKNAME
+========================= */
+function generateNickname(){
+  const adjectives = [
+    "용감한","친절한","똑똑한","행복한",
+    "재빠른","밝은","차분한"
+  ];
+
+  const animals = [
+    "호랑이","고양이","토끼","여우",
+    "판다","강아지","독수리"
+  ];
+
+  const adj =
+    adjectives[Math.floor(Math.random()*adjectives.length)];
+
+  const animal =
+    animals[Math.floor(Math.random()*animals.length)];
+
+  return `${adj} ${animal}`;
+}
+
+/* =========================
+   LOAD DATA
+========================= */
+function getSuggestions(){
+  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+}
+
+function saveSuggestions(data){
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(data)
+  );
+}
+
+/* =========================
+   IMAGE TO BASE64
+========================= */
+function convertImage(file){
+  return new Promise((resolve)=>{
+    if(!file){
+      resolve(null);
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = ()=>{
+      resolve(reader.result);
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+/* =========================
+   SUBMIT
+========================= */
+document.getElementById("submitBtn")
+.addEventListener("click", async()=>{
+
+  const title = titleInput.value.trim();
+  const content = contentInput.value.trim();
+  const password = passwordInput.value.trim();
+  const category = categoryInput.value;
+
+  /* VALIDATION */
+  if(title.length < 2){
+    alert("제목은 2자 이상 입력해주세요.");
+    return;
+  }
+
+  if(content.length < 5){
+    alert("내용은 5자 이상 입력해주세요.");
+    return;
+  }
+
+  if(password.length < 4){
+    alert("비밀번호는 4자 이상이어야 합니다.");
+    return;
+  }
+
+  const imageFile = imageInput.files[0];
+  const image = await convertImage(imageFile);
+
+  const suggestions = getSuggestions();
+
+  suggestions.push({
+    id:Date.now(),
+    nickname:generateNickname(),
+    category,
+    title,
+    content,
+    password,
+    image,
+    likes:0,
+    reports:0,
+    createdAt:new Date().toLocaleString(),
+    status:"접수됨",
+    adminReply:"학생회에서 검토 중입니다."
+  });
+
+  saveSuggestions(suggestions);
+
+  titleInput.value = "";
+  contentInput.value = "";
+  passwordInput.value = "";
+  imageInput.value = "";
+
+  renderSuggestions();
+});
+
+/* =========================
+   SORT SCORE
+========================= */
+function calculateScore(item){
+  return item.likes * 3 + item.id / 1000000000000;
+}
+
+/* =========================
+   RENDER
+========================= */
+function renderSuggestions(){
+
+  const keyword =
+    searchInput.value.toLowerCase();
+
+  const categoryFilter =
+    filterCategory.value;
+
+  let suggestions = getSuggestions();
+
+  suggestions = suggestions.filter(item=>{
+
+    const matchesSearch =
+      item.title.toLowerCase().includes(keyword) ||
+      item.content.toLowerCase().includes(keyword);
+
+    const matchesCategory =
+      !categoryFilter ||
+      item.category === categoryFilter;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  suggestions.sort((a,b)=>
+    calculateScore(b)-calculateScore(a)
+  );
+
+  if(suggestions.length === 0){
+    suggestionList.innerHTML = `
+      <div class="card empty">
+        <h2>📭 건의가 없습니다</h2>
+        <p>
+          아직 등록된 건의가 없거나
+          검색 결과가 없습니다.
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  suggestionList.innerHTML = suggestions.map(item=>`
+    <article class="card suggestion">
+
+      <div class="top-row">
+        <div>
+          <span class="badge category">
+            ${item.category}
+          </span>
+        </div>
+
+        <span class="badge status">
+          ${item.status}
+        </span>
+      </div>
+
+      <h2 class="title">${item.title}</h2>
+
+      <div class="meta">
+        👤 ${item.nickname} ·
+        🕒 ${item.createdAt}
+      </div>
+
+      <div class="content">
+        ${item.content}
+      </div>
+
+      ${item.image ? `
+        <img
+          src="${item.image}"
+          class="preview"
+          alt="첨부 이미지"
+        />
+      ` : ""}
+
+      <div class="actions">
+
+        <button
+          class="action-btn like"
+          onclick="likeSuggestion(${item.id})">
+          👍 좋아요 (${item.likes})
+        </button>
+
+        <button
+          class="action-btn"
+          onclick="reportSuggestion(${item.id})">
+          🚨 신고 (${item.reports})
+        </button>
+
+        <button
+          class="action-btn"
+          onclick="changeStatus(${item.id})">
+          📌 상태 변경
+        </button>
+
+        <button
+          class="action-btn delete"
+          onclick="deleteSuggestion(${item.id})">
+          🗑 삭제
+        </button>
+
+      </div>
+
+      <div class="reply-box">
+        <div class="reply-title">
+          학생회 답변
+        </div>
+
+        <div>${item.adminReply}</div>
+      </div>
+
+    </article>
+  `).join("");
+}
+
+/* =========================
+   LIKE
+========================= */
+function likeSuggestion(id){
+
+  const suggestions = getSuggestions();
+
+  const target =
+    suggestions.find(item=>item.id===id);
+
+  target.likes++;
+
+  saveSuggestions(suggestions);
+
+  renderSuggestions();
+}
+
+/* =========================
+   REPORT
+========================= */
+function reportSuggestion(id){
+
+  const suggestions = getSuggestions();
+
+  const target =
+    suggestions.find(item=>item.id===id);
+
+  target.reports++;
+
+  saveSuggestions(suggestions);
+
+  alert("신고가 접수되었습니다.");
+
+  renderSuggestions();
+}
+
+/* =========================
+   STATUS
+========================= */
+function changeStatus(id){
+
+  const suggestions = getSuggestions();
+
+  const target =
+    suggestions.find(item=>item.id===id);
+
+  const status = prompt(
+    "상태 입력\n예: 검토중 / 처리완료"
+  );
+
+  if(!status) return;
+
+  target.status = status;
+
+  const reply = prompt(
+    "학생회 답변 입력"
+  );
+
+  if(reply){
+    target.adminReply = reply;
+  }
+
+  saveSuggestions(suggestions);
+
+  renderSuggestions();
+}
+
+/* =========================
+   DELETE
+========================= */
+function deleteSuggestion(id){
+
+  const password =
+    prompt("비밀번호 입력");
+
+  if(password === null) return;
+
+  let suggestions = getSuggestions();
+
+  const target =
+    suggestions.find(item=>item.id===id);
+
+  if(target.password !== password){
+    alert("비밀번호가 일치하지 않습니다.");
+    return;
+  }
+
+  suggestions =
+    suggestions.filter(item=>item.id!==id);
+
+  saveSuggestions(suggestions);
+
+  renderSuggestions();
+}
+
+/* =========================
+   SEARCH
+========================= */
+searchInput.addEventListener(
+  "input",
+  renderSuggestions
+);
+
+filterCategory.addEventListener(
+  "change",
+  renderSuggestions
+);
+
+/* =========================
+   DARK MODE
+========================= */
+const darkBtn =
+  document.getElementById("darkBtn");
+
+if(localStorage.getItem("darkMode")==="true"){
+  document.body.classList.add("dark");
+}
+
+darkBtn.addEventListener("click",()=>{
+
+  document.body.classList.toggle("dark");
+
+  localStorage.setItem(
+    "darkMode",
+    document.body.classList.contains("dark")
+  );
+});
+
+/* =========================
+   BACKUP
+========================= */
+document.getElementById("backupBtn")
+.addEventListener("click",()=>{
+
+  const data =
+    localStorage.getItem(STORAGE_KEY);
+
+  const blob =
+    new Blob([data], {type:"application/json"});
+
+  const a = document.createElement("a");
+
+  a.href = URL.createObjectURL(blob);
+
+  a.download = "suggestions-backup.json";
+
+  a.click();
+});
+
+/* =========================
+   RESTORE
+========================= */
+document.getElementById("restoreBtn")
+.addEventListener("click",()=>{
+
+  const input =
+    document.createElement("input");
+
+  input.type = "file";
+
+  input.accept = "application/json";
+
+  input.onchange = e => {
+
+    const file = e.target.files[0];
+
+    const reader = new FileReader();
+
+    reader.onload = ()=>{
+      localStorage.setItem(
+        STORAGE_KEY,
+        reader.result
+      );
+
+      renderSuggestions();
+    };
+
+    reader.readAsText(file);
+  };
+
+  input.click();
+});
+
+/* =========================
+   INITIAL RENDER
+========================= */
+renderSuggestions();
+
+</script>
+
+</body>
+</html>
